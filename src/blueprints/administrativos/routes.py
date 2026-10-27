@@ -1,40 +1,39 @@
 from flask import Blueprint, jsonify, request
 from database import mysql
 
-maestros_bp = Blueprint(
-    'maestros',
+administrativos_bp = Blueprint(
+    'administrativos',
     __name__,
-    url_prefix='/api/maestros'
+    url_prefix='/api/administrativos'
 )
 
 def fila_a_diccionario(cursor, fila):
     columnas = [columna[0] for columna in cursor.description]
     return dict(zip(columnas, fila))
 
-
-@maestros_bp.route('', methods=['GET'])
-def lista_maestros():
+@administrativos_bp.route('', methods=['GET'])
+def lista_administrativos():
     cursor = None
 
     try:
         cursor=mysql.connection.cursor()
-        cursor.execute("""SELECT matricula,nombre,apaterno,amaterno,correo FROM maestros""")
+        cursor.execute("""SELECT numempleado, nombre, apellidos, telefono, correo, departamento FROM administrativos""")
  
         datos=cursor.fetchall()
-        maestros=[
+        administrativos=[
             fila_a_diccionario(cursor,fila)
             for fila in datos
         ]
  
         return jsonify({
-            'maestros': maestros,
-            'mensaje': 'Lista de alumnos',
+            'administrativos': administrativos,
+            'mensaje': 'Lista de administrativos',
             'exito': True
         }), 200
 
     except Exception:
         return jsonify({
-            'mensaje': 'Error al consultar los maestros',
+            'mensaje': 'Error al consultar los administrativos',
             'exito': False
         }), 500
 
